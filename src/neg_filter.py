@@ -77,17 +77,9 @@ def _llm_filter(label_pairs, seed=0, device="cuda:0", log_file="llm_process.txt"
 
     # set the seed for transformers
     set_seed(seed)
-    
-    model = AutoModelForCausalLM.from_pretrained(
-        "Qwen/Qwen2.5-1.5B-Instruct",
-        torch_dtype="auto",
-        device_map=device
-    )
-    tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-1.5B-Instruct")
 
-
-    # model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-14B-Instruct-1M", torch_dtype="auto", device_map=device)
-    # tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-14B-Instruct-1M")
+    model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-14B-Instruct-1M", torch_dtype="auto", device_map=device)
+    tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-14B-Instruct-1M")
         
     # model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct-1M", torch_dtype="auto", device_map=device)
     # tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct-1M")
@@ -153,13 +145,28 @@ def _llm_filter(label_pairs, seed=0, device="cuda:0", log_file="llm_process.txt"
     return filtered_neg_labels
     
 
+# def neg_filter(neg_labels_noun, neg_labels_adj, pos_labels, clip_model, seed=0, device='cuda:0', output_folder='output/'):
+#     # step 1: Find the top matching positive labels for each negative label, used in the second step for subcategory check
+#     noun_pairs = _find_top_matching_pairs(_clean_words(neg_labels_noun), pos_labels, clip_model, device)
+#     adj_pairs = _find_top_matching_pairs(_clean_words(neg_labels_adj), pos_labels, clip_model, device)
+
+#     # step 2: Use the LLM to filter out negative labels that are proper nouns or subcategory of one of their top-matching positive labels
+#     filtered_neg_labels_noun = _llm_filter(noun_pairs, seed=seed, device=device, log_file=output_folder+'llm_process_noun')
+#     filtered_neg_labels_adj = _llm_filter(adj_pairs, seed=seed, device=device, log_file=output_folder+'llm_process_adj')
+
+#     return filtered_neg_labels_noun, filtered_neg_labels_adj
+
+
 def neg_filter(neg_labels_noun, neg_labels_adj, pos_labels, clip_model, seed=0, device='cuda:0', output_folder='output/'):
-    # step 1: Find the top matching positive labels for each negative label, used in the second step for subcategory check
     noun_pairs = _find_top_matching_pairs(_clean_words(neg_labels_noun), pos_labels, clip_model, device)
     adj_pairs = _find_top_matching_pairs(_clean_words(neg_labels_adj), pos_labels, clip_model, device)
 
-    # step 2: Use the LLM to filter out negative labels that are proper nouns or subcategory of one of their top-matching positive labels
-    filtered_neg_labels_noun = _llm_filter(noun_pairs, seed=seed, device=device, log_file=output_folder+'llm_process_noun')
-    filtered_neg_labels_adj = _llm_filter(adj_pairs, seed=seed, device=device, log_file=output_folder+'llm_process_adj')
+    # ❌ BỎ LLM FILTER
+    # filtered_neg_labels_noun = _llm_filter(noun_pairs, seed=seed, device=device, log_file=output_folder+'llm_process_noun')
+    # filtered_neg_labels_adj = _llm_filter(adj_pairs, seed=seed, device=device, log_file=output_folder+'llm_process_adj')
+
+    # ✅ GIỮ NGUYÊN TOÀN BỘ TỪ VỰNG (KHÔNG LỌC)
+    filtered_neg_labels_noun = [p[0] for p in noun_pairs]
+    filtered_neg_labels_adj = [p[0] for p in adj_pairs]
 
     return filtered_neg_labels_noun, filtered_neg_labels_adj

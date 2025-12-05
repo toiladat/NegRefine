@@ -14,13 +14,13 @@ def load_dataset(dataset_name):
     data_path = 'data/'
 
     if dataset_name == 'imagenet':
-        dataset = ImageNet(root=data_path+'ImageNet/', split='val')
+        dataset = ImageNet(root=data_path+'Imagenet_O/', split='val')
     elif dataset_name == 'inaturalist':
-        dataset = tv.datasets.ImageFolder(data_path+"iNaturalist/")
+        dataset = tv.datasets.ImageFolder(data_path+"iNaturalist_OOD_Plants/")
     elif dataset_name == 'sun':
         dataset = tv.datasets.ImageFolder(data_path+"SUN/images/")
     elif dataset_name == 'texture':
-        dataset = tv.datasets.ImageFolder(data_path+"dtd/images/")
+        dataset = tv.datasets.ImageFolder(data_path+"Textures/")
     elif dataset_name == 'places':
         dataset = tv.datasets.ImageFolder(data_path+"Places/")
     elif dataset_name == 'clean':
@@ -57,6 +57,8 @@ def load_dataset(dataset_name):
         dataset = tv.datasets.ImageFolder(data_path+"placesbg/")
     elif dataset_name == 'imagenet99':
         dataset = tv.datasets.ImageFolder(data_path+"ImageNet99/")
+    elif dataset_name == 'species':
+        dataset = tv.datasets.ImageFolder(data_path+"Species/")
     else:
         print(f"Dataset name {dataset_name} does not match with any of the datasets." )
         exit(1)
