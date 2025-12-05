@@ -78,8 +78,9 @@ def _llm_filter(label_pairs, seed=0, device="cuda:0", log_file="llm_process.txt"
     # set the seed for transformers
     set_seed(seed)
 
-    model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-14B-Instruct-1M", torch_dtype="auto", device_map=device)
-    tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-14B-Instruct-1M")
+    model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2", torch_dtype="auto", device_map="auto")
+    tokenizer = AutoTokenizer.from_pretrained("mistralai/Mistral-7B-Instruct-v0.2")
+
         
     # model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen2.5-7B-Instruct-1M", torch_dtype="auto", device_map=device)
     # tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct-1M")
