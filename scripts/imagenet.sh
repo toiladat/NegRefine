@@ -4,14 +4,14 @@
 TRAIN_DATASET="imagenet"
 SEED=0
 OUTPUT_FOLDER="output/imagenet/seed_${SEED}/"
-DEVICE="cuda:0"
+DEVICE="mps"
 OOD_DATASETS="inaturalist open_image clean ninco"
 # OOD_DATASETS="inaturalist open_image clean ninco sun places texture"
 
 # Create output directory
 mkdir -p "$OUTPUT_FOLDER"
 
-python src/eval.py --in_dataset_name "$TRAIN_DATASET" --ood_dataset_name_list $OOD_DATASETS --seed "$SEED" --device "$DEVICE" --output_folder "$OUTPUT_FOLDER" | tee "${OUTPUT_FOLDER}result.txt"
+python src/create_negs.py --in_dataset_name "$TRAIN_DATASET" --ood_dataset_name_list $OOD_DATASETS --seed "$SEED" --device "$DEVICE" --output_folder "$OUTPUT_FOLDER" | tee "${OUTPUT_FOLDER}result.txt"
 
 # # Use --load_saved_labels option to reload previously created negative labels
 # python src/eval.py --in_dataset_name "$TRAIN_DATASET" --ood_dataset_name_list $OOD_DATASETS --seed "$SEED" --device "$DEVICE" --output_folder "$OUTPUT_FOLDER" --load_saved_labels | tee "${OUTPUT_FOLDER}result.txt"

@@ -14,3 +14,5 @@ python src/eval.py --in_dataset_name "$TRAIN_DATASET" --ood_dataset_name_list $O
 
 # # Use --load_saved_labels option to reload previously created negative labels
 # python src/eval.py --in_dataset_name "$TRAIN_DATASET" --ood_dataset_name_list $OOD_DATASETS --seed "$SEED" --device "$DEVICE" --output_folder "$OUTPUT_FOLDER" --load_saved_labels | tee "${OUTPUT_FOLDER}result.txt"
+
+
