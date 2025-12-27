@@ -27,6 +27,8 @@ for app in $(yarn application -list | grep application_ | awk '{print $1}'); do 
 yarn application -list
 
 
+
+#v1
 hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
     -D mapreduce.map.memory.mb=6144 \
     -D mapreduce.map.java.opts=-Xmx1024m \
@@ -40,4 +42,29 @@ hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
     -output "/user/data/clip_final_real"
 
 
+#v2
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+    -D mapreduce.map.memory.mb=5120 \
+    -D mapreduce.reduce.memory.mb=5120 \
+    -D mapreduce.task.timeout=1800000 \
+    -files "mapper.py,reducer.py,positive_words.txt" \
+    -cmdenv PYTHONPATH="/Users/toiladat/Downloads/NegRefine/venv/lib/python3.13/site-packages" \
+    -mapper "python3 mapper.py" \
+    -reducer "python3 reducer.py" \
+    -input "/user/data/wordnet/*.txt" \
+    -output "/user/data/clip_final_real"
 
+# 2. Chạy với 4 Reducers để tận dụng 32GB RAM
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+    -D mapreduce.map.memory.mb=5120 \
+    -D mapreduce.reduce.memory.mb=5120 \
+    -D mapreduce.job.reduces=4 \
+    -D mapreduce.task.timeout=1800000 \
+    -files "mapper.py,reducer.py,positive_words.txt" \
+    -cmdenv PYTHONPATH="/Users/toiladat/Downloads/NegRefine/venv/lib/python3.13/site-packages" \
+    -mapper "python3 mapper.py" \
+    -reducer "python3 reducer.py" \
+    -input "/user/data/wordnet/*.txt" \
+    -output "/user/data/clip_final_real"
+
+hdfs dfs -getmerge /user/data/clip_final_real ./wordnet_negrefine_final.txt
