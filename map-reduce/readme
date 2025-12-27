@@ -1,0 +1,43 @@
+# Khởi động hệ thống lưu trữ (HDFS)
+start-dfs.sh
+
+# Khởi động hệ thống quản lý tài nguyên (YARN)
+start-yarn.sh
+
+
+hdfs dfs -mkdir -p /user/data/wordnet
+hdfs dfs -put ./txtfiles/*.txt /user/data/wordnet/
+hdfs dfs -ls /user/data/wordnet
+
+# Đẩy file nhãn dương lên HDFS
+hdfs dfs -put positive_words.txt /user/data/
+
+
+chmod +x mapper.py reducer.py
+
+hdfs dfs -rm -r /user/data/clip_final_output
+hdfs dfs -rm -r /user/data/clip_final_success
+hdfs dfs -rm -r /user/data/clip_final_real
+
+
+
+# Lệnh này sẽ kill sạch các application đang chạy/chờ của user toiladat
+for app in $(yarn application -list | grep application_ | awk '{print $1}'); do yarn application -kill $app; done
+
+yarn application -list
+
+
+hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
+    -D mapreduce.map.memory.mb=6144 \
+    -D mapreduce.map.java.opts=-Xmx1024m \
+    -D mapreduce.reduce.memory.mb=2048 \
+    -D mapreduce.job.reduces=1 \
+    -files "mapper.py,reducer.py,positive_words.txt" \
+    -cmdenv PYTHONPATH="/Users/toiladat/Downloads/NegRefine/venv/lib/python3.13/site-packages" \
+    -mapper "python3 mapper.py" \
+    -reducer "python3 reducer.py" \
+    -input "/user/data/wordnet/noun.Tops.txt" \
+    -output "/user/data/clip_final_real"
+
+
+
